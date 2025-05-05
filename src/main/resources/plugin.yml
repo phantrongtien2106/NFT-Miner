@@ -1,0 +1,31 @@
+name: NFTMiner
+version: '${project.version}'
+main: me.tien.nftminer.NFTMiner
+api-version: 1.18
+depend: [NFTPlugin]
+commands:
+  claim:
+    description: Nhận mine của bạn
+    usage: /claim
+  resetmine:
+    description: Đặt lại mine của bạn
+    usage: /resetmine
+  miningbox:
+    description: Teleport đến khu đào cá nhân
+    usage: /miningbox
+    permission: nftminer.miningbox
+  token:
+    description: Xem thông tin về token
+    usage: /token
+    permission: nftminer.miningbox
+  shop:
+    description: Mở shop để nâng cấp
+    usage: /shop
+    permission: nftminer.miningbox
+  resetupgrades:
+    description: Đặt lại toàn bộ cấp độ nâng cấp
+    usage: /resetupgrades
+    permission: nftminer.resetupgrades
+  help:
+    description: Xem thông tin về plugin
+    usage: /help

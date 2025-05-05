@@ -1,0 +1,93 @@
+# Giá trị token cho các loại block
+block-values:
+  COBBLESTONE: 1
+  RAW_IRON: 2
+  RAW_GOLD: 5
+  DIAMOND: 10
+  STONE: 3
+  IRON_ORE: 4
+  GOLD_ORE: 10
+  DIAMOND_ORE: 20
+# Thêm phần này vào file config.yml của NFTMiner
+minepath:
+  host: localhost
+  port: 3306
+  database: minepath
+  username: root
+  password: solana
+
+mine-box:
+  x: 0
+  y: 2
+  z: 0
+
+# Cấu hình nâng cấp tốc độ
+speed-upgrade:
+  # Cấp độ tối đa
+  max-level: 5
+
+  # Giá nâng cấp mỗi cấp (token)
+  costs:
+    1: 500
+    2: 700
+    3: 900
+    4: 1000
+    5: 1200
+
+  # Cấp độ hiệu ứng Haste mỗi cấp
+  effects:
+    1: 0  # Cấp 1: Không có hiệu ứng
+    2: 1  # Cấp 2: Haste I
+    3: 2  # Cấp 3: Haste II
+    4: 3  # Cấp 4: Haste III
+    5: 4  # Cấp 5: Haste IV
+
+inventory-upgrade:
+  restricted-world: miningbox
+  max-level: 3
+  costs:
+    1: 200
+    2: 500
+    3: 1000
+
+# Cấu hình nâng cấp giá trị token
+token-value-upgrade:
+  max-level: 5
+  costs:
+    1: 100
+    2: 250
+    3: 500
+    4: 1000
+    5: 2000
+  multipliers:
+    1: 1.2
+    2: 1.5
+    3: 2.0
+    4: 2.5
+    5: 3.0
+# Cấu hình tỉ lệ rơi NFT theo độ hiếm
+  tiers:
+    common:
+      lucky_charm_1: 60
+      explosion_pickaxe_1: 20
+      laser_pickaxe_1: 20
+
+    rare:
+      lucky_charm_2: 40
+      explosion_pickaxe_2: 30
+      laser_pickaxe_2: 30
+
+    epic:
+      lucky_charm_5: 40
+      explosion_pickaxe_3: 30
+      laser_pickaxe_3: 30
+
+    legendary:
+      lucky_charm_10: 40
+      explosion_pickaxe_4: 30
+      laser_pickaxe_4: 30
+
+    mythic:
+      lucky_charm_20: 40
+      explosion_pickaxe_5: 30
+      laser_pickaxe_5: 30
