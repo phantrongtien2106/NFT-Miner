@@ -65,29 +65,58 @@ token-value-upgrade:
     3: 2.0
     4: 2.5
     5: 3.0
-# Cấu hình tỉ lệ rơi NFT theo độ hiếm
+
+# Cấu hình tỉ lệ rớt NFT
+nft-drop:
+  # Cơ hội cơ bản để rơi NFT (0.05 = 5%)
+  # Đặt thấp để tạo cảm giác hiếm và quý giá
+  base-drop-chance: 0.05
+
+  # Thời gian chờ giữa các lần rơi NFT (giây)
+  # Đặt 300 giây (5 phút) để tránh farm quá nhanh
+  cooldown-seconds: 300
+
+  # Tỉ lệ rơi theo độ hiếm (%)
+  # Tăng tỉ lệ common và uncommon, giảm tỉ lệ legendary
+  rarity-drop-rates:
+    common: 60.0
+    uncommon: 25.0
+    rare: 10.0
+    epic: 4.0
+    legendary: 1.0
+
+  # Cài đặt buff
+  buffs:
+    # Bật/tắt hệ thống buff
+    enabled: true
+
+    # Giới hạn buff luck tối đa (0.15 = 15%)
+    # Giảm xuống để không quá mạnh
+    max-luck-buff: 0.15
+
+  # Cấu hình tỉ lệ rơi NFT theo độ hiếm
   tiers:
     common:
       lucky_charm_1: 60
-      explosion_pickaxe_1: 20
-      laser_pickaxe_1: 20
+      explosion_pickaxe_1: 15  # Giảm từ 30 xuống 15
+      laser_pickaxe_1: 25      # Tăng từ 20 lên 25
+
+    uncommon:
+      lucky_charm_2: 60
+      explosion_pickaxe_2: 15  # Giảm từ 30 xuống 15
+      laser_pickaxe_2: 25      # Tăng từ 20 lên 25
 
     rare:
-      lucky_charm_2: 40
-      explosion_pickaxe_2: 30
-      laser_pickaxe_2: 30
+      lucky_charm_5: 60
+      explosion_pickaxe_3: 15  # Giảm từ 30 xuống 15
+      laser_pickaxe_3: 25      # Tăng từ 20 lên 25
 
     epic:
-      lucky_charm_5: 40
-      explosion_pickaxe_3: 30
-      laser_pickaxe_3: 30
+      lucky_charm_10: 60
+      explosion_pickaxe_4: 15  # Giảm từ 30 xuống 15
+      laser_pickaxe_4: 25      # Tăng từ 20 lên 25
 
     legendary:
-      lucky_charm_10: 40
-      explosion_pickaxe_4: 30
-      laser_pickaxe_4: 30
-
-    mythic:
-      lucky_charm_20: 40
-      explosion_pickaxe_5: 30
-      laser_pickaxe_5: 30
+      lucky_charm_20: 60
+      explosion_pickaxe_5: 10  # Giảm từ 15 xuống 10
+      laser_pickaxe_5: 30      # Tăng từ 15 lên 30

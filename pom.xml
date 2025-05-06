@@ -31,13 +31,8 @@
   </repositories>
 
   <dependencies>
-    <dependency>
-      <groupId>com.minecraft</groupId>
-      <artifactId>nft-plugin</artifactId>
-      <version>1.0-SNAPSHOT</version>
-      <scope>system</scope>
-      <systemPath>${project.basedir}/src/libs/NFTPlugin.jar</systemPath>
-    </dependency>
+    <!-- NFTPlugin dependency removed to avoid conflicts -->
+    <!-- We now use our own proxy classes instead -->
     <!-- Paper API -->
     <dependency>
       <groupId>io.papermc.paper</groupId>

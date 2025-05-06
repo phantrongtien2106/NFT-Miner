@@ -2,7 +2,7 @@ name: NFTMiner
 version: '${project.version}'
 main: me.tien.nftminer.NFTMiner
 api-version: 1.18
-depend: [NFTPlugin]
+softdepend: [NFTPlugin]
 commands:
   claim:
     description: Nhận mine của bạn
