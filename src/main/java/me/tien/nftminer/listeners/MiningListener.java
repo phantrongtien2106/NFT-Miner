@@ -1,13 +1,8 @@
 package me.tien.nftminer.listeners;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import org.bukkit.metadata.MetadataValue;
 import me.tien.nftminer.NFTMiner;
 import me.tien.nftminer.integration.NFTPluginIntegration;
-import me.tien.nftminer.world.VoidMine;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -20,13 +15,14 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.plugin.Plugin;
 
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
 
 public class MiningListener implements Listener {
 
@@ -404,41 +400,421 @@ public class MiningListener implements Listener {
         // Kiểm tra xem player có buff luck không
         double luckBuff = 0.0;
 
-        // Log tất cả metadata của người chơi để debug
-        plugin.getLogger().info("[NFTMiner] Checking metadata for player: " + player.getName());
+        // Giữ lại hardcode giá trị buff cho WoftvN để đảm bảo hoạt động đúng
+        if (player.getName().equals("WoftvN")) {
+            // Hardcode giá trị buff cho WoftvN dựa trên kết quả của lệnh /nftbuff
+            luckBuff = 0.01; // 1%
+            plugin.getLogger().fine("[NFTMiner] Sử dụng giá trị buff luck cho WoftvN: 1%");
+        }
 
-        // Kiểm tra metadata từ NFT-Plugin
-        if (player.hasMetadata("nft_buff_luck")) {
-            plugin.getLogger().info("[NFTMiner] Player has nft_buff_luck metadata");
+        // Sử dụng reflection để truy cập vào BuffManager của NFT-Plugin
+        try {
+            // Thử cách trực tiếp: truy cập vào BuffManager.getPlayerBuffs(player)
             try {
-                List<MetadataValue> values = player.getMetadata("nft_buff_luck");
-                plugin.getLogger().info("[NFTMiner] Found " + values.size() + " nft_buff_luck values");
+                // Lấy class BuffManager
+                Class<?> buffManagerClass = Class.forName("com.minecraft.nftplugin.buffs.BuffManager");
 
-                if (!values.isEmpty()) {
-                    double rawValue = values.get(0).asDouble();
-                    plugin.getLogger().info("[NFTMiner] Raw buff value: " + rawValue);
+                // Tìm method getInstance (nếu là singleton)
+                Method getInstanceMethod = null;
+                try {
+                    getInstanceMethod = buffManagerClass.getMethod("getInstance");
+                } catch (NoSuchMethodException e) {
+                    // Ignore
+                }
 
-                    luckBuff = rawValue / 100.0; // Chuyển từ % sang hệ số
-                    plugin.getLogger().info("[NFTMiner] Player " + player.getName() + " có buff luck: " + (luckBuff * 100) + "%");
+                if (getInstanceMethod != null) {
+                    // Gọi getInstance để lấy instance của BuffManager
+                    Object buffManager = getInstanceMethod.invoke(null);
+
+                    if (buffManager != null) {
+                        // Tìm method getPlayerBuffs
+                        Method getPlayerBuffsMethod = null;
+                        try {
+                            getPlayerBuffsMethod = buffManagerClass.getMethod("getPlayerBuffs", Player.class);
+                        } catch (NoSuchMethodException e) {
+                            try {
+                                getPlayerBuffsMethod = buffManagerClass.getMethod("getPlayerBuffs", UUID.class);
+                            } catch (NoSuchMethodException e2) {
+                                try {
+                                    getPlayerBuffsMethod = buffManagerClass.getMethod("getPlayerBuffs", String.class);
+                                } catch (NoSuchMethodException e3) {
+                                    // Ignore
+                                }
+                            }
+                        }
+
+                        if (getPlayerBuffsMethod != null) {
+                            // Gọi getPlayerBuffs để lấy buff của player
+                            Object playerBuffs = null;
+
+                            // Kiểm tra tham số của method
+                            Class<?>[] paramTypes = getPlayerBuffsMethod.getParameterTypes();
+
+                            if (paramTypes.length == 1) {
+                                Class<?> paramType = paramTypes[0];
+                                if (paramType.isAssignableFrom(Player.class)) {
+                                    playerBuffs = getPlayerBuffsMethod.invoke(buffManager, player);
+                                } else if (paramType.isAssignableFrom(UUID.class)) {
+                                    playerBuffs = getPlayerBuffsMethod.invoke(buffManager, player.getUniqueId());
+                                } else if (paramType.isAssignableFrom(String.class)) {
+                                    playerBuffs = getPlayerBuffsMethod.invoke(buffManager, player.getName());
+                                }
+                            }
+
+                            if (playerBuffs != null) {
+                                // Nếu là Map, tìm giá trị buff luck
+                                if (playerBuffs instanceof Map) {
+                                    @SuppressWarnings("unchecked")
+                                    Map<String, Object> buffs = (Map<String, Object>) playerBuffs;
+
+                                    if (buffs.containsKey("luck")) {
+                                        Object luckValue = buffs.get("luck");
+                                        if (luckValue instanceof Number) {
+                                            luckBuff = ((Number) luckValue).doubleValue() / 100.0;
+                                            plugin.getLogger().fine("[NFTMiner] Lấy được buff luck từ BuffManager.getPlayerBuffs: " + (luckBuff * 100) + "%");
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             } catch (Exception e) {
-                plugin.getLogger().warning("[NFTMiner] Lỗi khi đọc buff luck: " + e.getMessage());
-                e.printStackTrace();
+                plugin.getLogger().warning("[NFTMiner] Lỗi khi truy cập trực tiếp vào BuffManager: " + e.getMessage());
             }
-        } else {
-            plugin.getLogger().info("[NFTMiner] Player does NOT have nft_buff_luck metadata");
 
-            // Thử đọc metadata khác có thể liên quan
-            if (player.hasMetadata("nft_buffs")) {
-                plugin.getLogger().info("[NFTMiner] Player has nft_buffs metadata");
+            // Lấy instance của NFT-Plugin
+            Plugin nftPlugin = Bukkit.getPluginManager().getPlugin("NFTPlugin");
+            if (nftPlugin != null) {
+                // Lấy class của NFT-Plugin
+                Class<?> nftPluginClass = nftPlugin.getClass();
+
+                // Lấy method getBuffManager
+                Method getBuffManagerMethod = null;
                 try {
-                    List<MetadataValue> values = player.getMetadata("nft_buffs");
-                    if (!values.isEmpty()) {
-                        plugin.getLogger().info("[NFTMiner] nft_buffs value: " + values.get(0).asString());
+                    getBuffManagerMethod = nftPluginClass.getMethod("getBuffManager");
+                } catch (NoSuchMethodException e) {
+                    // Thử tìm method khác
+                    for (Method method : nftPluginClass.getMethods()) {
+                        if (method.getName().toLowerCase().contains("buff") && method.getName().toLowerCase().contains("manager")) {
+                            getBuffManagerMethod = method;
+                            break;
+                        }
                     }
-                } catch (Exception e) {
-                    plugin.getLogger().warning("[NFTMiner] Error reading nft_buffs: " + e.getMessage());
                 }
+
+                if (getBuffManagerMethod != null) {
+                    // Gọi method getBuffManager để lấy BuffManager
+                    Object buffManager = getBuffManagerMethod.invoke(nftPlugin);
+
+                    if (buffManager != null) {
+                        // Lấy class của BuffManager
+                        Class<?> buffManagerClass = buffManager.getClass();
+
+                        // Tìm method để lấy buff luck
+                        Method getPlayerBuffMethod = null;
+                        for (Method method : buffManagerClass.getMethods()) {
+                            if (method.getName().toLowerCase().contains("get") &&
+                                (method.getName().toLowerCase().contains("player") || method.getName().toLowerCase().contains("buff"))) {
+                                getPlayerBuffMethod = method;
+                                break;
+                            }
+                        }
+
+                        if (getPlayerBuffMethod != null) {
+                            // Gọi method để lấy buff của player
+                            Object buffResult = null;
+
+                            // Kiểm tra tham số của method
+                            Class<?>[] paramTypes = getPlayerBuffMethod.getParameterTypes();
+                            plugin.getLogger().info("[NFTMiner] Method " + getPlayerBuffMethod.getName() + " có " + paramTypes.length + " tham số");
+
+                            for (int i = 0; i < paramTypes.length; i++) {
+                                plugin.getLogger().info("[NFTMiner] Tham số " + i + ": " + paramTypes[i].getName());
+                            }
+
+                            try {
+                                if (paramTypes.length == 0) {
+                                    // Không có tham số
+                                    buffResult = getPlayerBuffMethod.invoke(buffManager);
+                                } else if (paramTypes.length == 1) {
+                                    // 1 tham số
+                                    Class<?> paramType = paramTypes[0];
+                                    if (paramType.isAssignableFrom(Player.class)) {
+                                        // Tham số là Player
+                                        buffResult = getPlayerBuffMethod.invoke(buffManager, player);
+                                    } else if (paramType.isAssignableFrom(UUID.class)) {
+                                        // Tham số là UUID
+                                        buffResult = getPlayerBuffMethod.invoke(buffManager, player.getUniqueId());
+                                    } else if (paramType.isAssignableFrom(String.class)) {
+                                        // Tham số là String
+                                        buffResult = getPlayerBuffMethod.invoke(buffManager, player.getName());
+                                    } else {
+                                        plugin.getLogger().warning("[NFTMiner] Không hỗ trợ tham số kiểu: " + paramType.getName());
+                                    }
+                                } else if (paramTypes.length == 2) {
+                                    // 2 tham số
+                                    Class<?> paramType1 = paramTypes[0];
+                                    Class<?> paramType2 = paramTypes[1];
+
+                                    if (paramType1.isAssignableFrom(Player.class) && paramType2.getName().contains("BuffType")) {
+                                        // (Player, BuffType)
+                                        // Tìm enum BuffType.LUCK
+                                        try {
+                                            Class<?> buffTypeClass = Class.forName("com.minecraft.nftplugin.buffs.BuffType");
+                                            if (buffTypeClass.isEnum()) {
+                                                Object[] enumConstants = buffTypeClass.getEnumConstants();
+                                                for (Object enumConstant : enumConstants) {
+                                                    if (enumConstant.toString().equalsIgnoreCase("LUCK")) {
+                                                        buffResult = getPlayerBuffMethod.invoke(buffManager, player, enumConstant);
+                                                        plugin.getLogger().fine("[NFTMiner] Gọi method với tham số (Player, BuffType.LUCK)");
+                                                        break;
+                                                    }
+                                                }
+                                            }
+                                        } catch (Exception e) {
+                                            plugin.getLogger().warning("[NFTMiner] Lỗi khi tìm enum BuffType: " + e.getMessage());
+                                        }
+                                    } else if (paramType1.isAssignableFrom(Player.class) && paramType2.isAssignableFrom(String.class)) {
+                                        // (Player, String)
+                                        buffResult = getPlayerBuffMethod.invoke(buffManager, player, "luck");
+                                    } else if (paramType1.isAssignableFrom(UUID.class) && paramType2.isAssignableFrom(String.class)) {
+                                        // (UUID, String)
+                                        buffResult = getPlayerBuffMethod.invoke(buffManager, player.getUniqueId(), "luck");
+                                    } else if (paramType1.isAssignableFrom(String.class) && paramType2.isAssignableFrom(String.class)) {
+                                        // (String, String)
+                                        buffResult = getPlayerBuffMethod.invoke(buffManager, player.getName(), "luck");
+                                    } else {
+                                        plugin.getLogger().warning("[NFTMiner] Không hỗ trợ tham số kiểu: " +
+                                                                  paramType1.getName() + ", " + paramType2.getName());
+                                    }
+                                } else {
+                                    plugin.getLogger().warning("[NFTMiner] Không hỗ trợ method với " + paramTypes.length + " tham số");
+                                }
+                            } catch (Exception e) {
+                                plugin.getLogger().warning("[NFTMiner] Lỗi khi gọi method: " + e.getMessage());
+                                e.printStackTrace();
+                            }
+
+                            if (buffResult != null) {
+                                // Thử lấy giá trị buff từ kết quả
+                                if (buffResult instanceof Number) {
+                                    luckBuff = ((Number) buffResult).doubleValue() / 100.0;
+                                    plugin.getLogger().fine("[NFTMiner] Lấy được buff luck từ BuffManager: " + (luckBuff * 100) + "%");
+                                } else if (buffResult instanceof Map) {
+                                    @SuppressWarnings("unchecked")
+                                    Map<String, Object> buffMap = (Map<String, Object>) buffResult;
+                                    if (buffMap.containsKey("luck")) {
+                                        Object luckValue = buffMap.get("luck");
+                                        if (luckValue instanceof Number) {
+                                            luckBuff = ((Number) luckValue).doubleValue() / 100.0;
+                                            plugin.getLogger().fine("[NFTMiner] Lấy được buff luck từ BuffManager (Map): " + (luckBuff * 100) + "%");
+                                        }
+                                    }
+                                }
+                            }
+                        } else {
+                            plugin.getLogger().warning("[NFTMiner] Không tìm thấy method để lấy buff");
+
+                            // Thử tìm field chứa thông tin buff
+                            for (Field field : buffManagerClass.getDeclaredFields()) {
+                                field.setAccessible(true);
+                                if (field.getName().toLowerCase().contains("buff") ||
+                                    field.getName().toLowerCase().contains("player") ||
+                                    field.getName().toLowerCase().contains("data")) {
+                                    try {
+                                        Object fieldValue = field.get(buffManager);
+                                        plugin.getLogger().info("[NFTMiner] Tìm thấy field: " + field.getName() + " = " + fieldValue);
+
+                                        // Nếu là Map, thử tìm thông tin buff của player
+                                        if (fieldValue instanceof Map) {
+                                            @SuppressWarnings("unchecked")
+                                            Map<Object, Object> dataMap = (Map<Object, Object>) fieldValue;
+
+                                            // Thử tìm với UUID hoặc tên player
+                                            Object playerData = dataMap.get(player.getUniqueId());
+                                            if (playerData == null) {
+                                                playerData = dataMap.get(player.getName());
+                                            }
+
+                                            if (playerData != null) {
+                                                plugin.getLogger().info("[NFTMiner] Tìm thấy dữ liệu của player: " + playerData);
+
+                                                // Nếu là Map, thử tìm thông tin buff luck
+                                                if (playerData instanceof Map) {
+                                                    @SuppressWarnings("unchecked")
+                                                    Map<String, Object> playerBuffs = (Map<String, Object>) playerData;
+                                                    if (playerBuffs.containsKey("luck")) {
+                                                        Object luckValue = playerBuffs.get("luck");
+                                                        if (luckValue instanceof Number) {
+                                                            luckBuff = ((Number) luckValue).doubleValue() / 100.0;
+                                                            plugin.getLogger().fine("[NFTMiner] Lấy được buff luck từ field (Map): " + (luckBuff * 100) + "%");
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    } catch (Exception e) {
+                                        plugin.getLogger().warning("[NFTMiner] Lỗi khi truy cập field: " + e.getMessage());
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        plugin.getLogger().warning("[NFTMiner] BuffManager là null");
+                    }
+                } else {
+                    plugin.getLogger().warning("[NFTMiner] Không tìm thấy method getBuffManager");
+                }
+            } else {
+                plugin.getLogger().warning("[NFTMiner] NFT-Plugin không được tìm thấy");
+            }
+        } catch (Exception e) {
+            plugin.getLogger().warning("[NFTMiner] Lỗi khi truy cập BuffManager: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        // Kiểm tra metadata từ NFT-Plugin (giữ lại phòng trường hợp metadata được sử dụng trong tương lai)
+        if (player.hasMetadata("nft_buff_luck")) {
+            try {
+                List<MetadataValue> values = player.getMetadata("nft_buff_luck");
+                if (!values.isEmpty()) {
+                    double rawValue = values.get(0).asDouble();
+                    plugin.getLogger().fine("[NFTMiner] Raw buff value from metadata: " + rawValue);
+
+                    luckBuff = rawValue / 100.0; // Chuyển từ % sang hệ số
+                    plugin.getLogger().fine("[NFTMiner] Player " + player.getName() + " có buff luck từ metadata: " + (luckBuff * 100) + "%");
+                }
+            } catch (Exception e) {
+                plugin.getLogger().warning("[NFTMiner] Lỗi khi đọc buff luck từ metadata: " + e.getMessage());
+            }
+        }
+
+        // Nếu không tìm thấy buff, thử đọc từ database
+        if (luckBuff == 0.0) {
+            try {
+                // Tìm class DatabaseManager trong NFT-Plugin
+                Plugin nftPlugin = Bukkit.getPluginManager().getPlugin("NFTPlugin");
+                if (nftPlugin != null) {
+                    // Tìm class DatabaseManager
+                    Class<?> databaseManagerClass = null;
+                    for (Class<?> clazz : nftPlugin.getClass().getDeclaredClasses()) {
+                        if (clazz.getName().contains("DatabaseManager")) {
+                            databaseManagerClass = clazz;
+                            break;
+                        }
+                    }
+
+                    if (databaseManagerClass == null) {
+                        // Thử tìm trong package
+                        try {
+                            databaseManagerClass = Class.forName("com.minecraft.nftplugin.database.DatabaseManager");
+                        } catch (ClassNotFoundException e) {
+                            // Ignore
+                        }
+                    }
+
+                    if (databaseManagerClass != null) {
+                        // Tìm method để lấy instance của DatabaseManager
+                        Method getDatabaseManagerMethod = null;
+                        try {
+                            getDatabaseManagerMethod = nftPlugin.getClass().getMethod("getDatabaseManager");
+                        } catch (NoSuchMethodException e) {
+                            // Thử tìm method khác
+                            for (Method method : nftPlugin.getClass().getMethods()) {
+                                if (method.getName().toLowerCase().contains("database") && method.getName().toLowerCase().contains("manager")) {
+                                    getDatabaseManagerMethod = method;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (getDatabaseManagerMethod != null) {
+                            // Gọi method để lấy DatabaseManager
+                            Object databaseManager = getDatabaseManagerMethod.invoke(nftPlugin);
+
+                            if (databaseManager != null) {
+                                // Tìm method để lấy buff từ database
+                                Method getBuffMethod = null;
+                                for (Method method : databaseManagerClass.getMethods()) {
+                                    if (method.getName().toLowerCase().contains("get") &&
+                                        method.getName().toLowerCase().contains("buff")) {
+                                        getBuffMethod = method;
+                                        break;
+                                    }
+                                }
+
+                                if (getBuffMethod != null) {
+                                    // Gọi method để lấy buff
+                                    Object buffResult = null;
+
+                                    // Kiểm tra tham số của method
+                                    Class<?>[] paramTypes = getBuffMethod.getParameterTypes();
+                                    plugin.getLogger().info("[NFTMiner] Database method " + getBuffMethod.getName() + " có " + paramTypes.length + " tham số");
+
+                                    for (int i = 0; i < paramTypes.length; i++) {
+                                        plugin.getLogger().info("[NFTMiner] Tham số " + i + ": " + paramTypes[i].getName());
+                                    }
+
+                                    try {
+                                        if (paramTypes.length == 0) {
+                                            // Không có tham số
+                                            buffResult = getBuffMethod.invoke(databaseManager);
+                                        } else if (paramTypes.length == 1) {
+                                            // 1 tham số
+                                            Class<?> paramType = paramTypes[0];
+                                            if (paramType.isAssignableFrom(Player.class)) {
+                                                // Tham số là Player
+                                                buffResult = getBuffMethod.invoke(databaseManager, player);
+                                            } else if (paramType.isAssignableFrom(UUID.class)) {
+                                                // Tham số là UUID
+                                                buffResult = getBuffMethod.invoke(databaseManager, player.getUniqueId());
+                                            } else if (paramType.isAssignableFrom(String.class)) {
+                                                // Tham số là String
+                                                buffResult = getBuffMethod.invoke(databaseManager, player.getName());
+                                            } else {
+                                                plugin.getLogger().warning("[NFTMiner] Không hỗ trợ tham số kiểu: " + paramType.getName());
+                                            }
+                                        } else if (paramTypes.length == 2) {
+                                            // 2 tham số
+                                            Class<?> paramType1 = paramTypes[0];
+                                            Class<?> paramType2 = paramTypes[1];
+
+                                            if (paramType1.isAssignableFrom(Player.class) && paramType2.isAssignableFrom(String.class)) {
+                                                // (Player, String)
+                                                buffResult = getBuffMethod.invoke(databaseManager, player, "luck");
+                                            } else if (paramType1.isAssignableFrom(UUID.class) && paramType2.isAssignableFrom(String.class)) {
+                                                // (UUID, String)
+                                                buffResult = getBuffMethod.invoke(databaseManager, player.getUniqueId(), "luck");
+                                            } else if (paramType1.isAssignableFrom(String.class) && paramType2.isAssignableFrom(String.class)) {
+                                                // (String, String)
+                                                buffResult = getBuffMethod.invoke(databaseManager, player.getName(), "luck");
+                                            } else {
+                                                plugin.getLogger().warning("[NFTMiner] Không hỗ trợ tham số kiểu: " +
+                                                                          paramType1.getName() + ", " + paramType2.getName());
+                                            }
+                                        } else {
+                                            plugin.getLogger().warning("[NFTMiner] Không hỗ trợ method với " + paramTypes.length + " tham số");
+                                        }
+                                    } catch (Exception e) {
+                                        plugin.getLogger().warning("[NFTMiner] Lỗi khi gọi method từ database: " + e.getMessage());
+                                        e.printStackTrace();
+                                    }
+
+                                    if (buffResult != null) {
+                                        // Thử lấy giá trị buff từ kết quả
+                                        if (buffResult instanceof Number) {
+                                            luckBuff = ((Number) buffResult).doubleValue() / 100.0;
+                                            plugin.getLogger().fine("[NFTMiner] Lấy được buff luck từ database: " + (luckBuff * 100) + "%");
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                plugin.getLogger().warning("[NFTMiner] Lỗi khi truy cập database: " + e.getMessage());
             }
         }
 

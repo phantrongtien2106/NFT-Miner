@@ -119,6 +119,8 @@
 - Different rarity tiers with configurable drop rates
 - Special NFT items with unique properties
 - Integrated with NFTPlugin for blockchain functionality
+- Lucky Charm NFTs provide luck buffs to increase drop rates
+- Buff system fully integrated with NFT-Plugin
 
 ## � Commands
 
@@ -354,6 +356,12 @@ Configure the maximum level, costs, and multipliers for token value upgrades.
 
 ### NFT Tiers
 Configure the drop rates and types of NFTs for different rarity tiers.
+
+### Buff System
+Configure the buff system integration with NFT-Plugin:
+- `buffs.enabled`: Enable or disable the buff system
+- `buffs.max-luck-buff`: Set the maximum luck buff percentage (default: 15%)
+- Lucky Charm NFTs provide luck buffs that increase NFT drop rates
 </details>
 
 ## 🔒 Permissions

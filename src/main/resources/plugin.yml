@@ -1,8 +1,9 @@
 name: NFTMiner
-version: '${project.version}'
+version: '1.0.0'
 main: me.tien.nftminer.NFTMiner
 api-version: 1.18
 softdepend: [NFTPlugin]
+description: Plugin đào NFT với hệ thống buff từ NFT-Plugin
 commands:
   claim:
     description: Nhận mine của bạn
