@@ -1,7 +1,7 @@
-package me.tien.nftminer.commands;
+package me.tien.miner_simulator.commands;
 
-import me.tien.nftminer.world.VoidMine;
-import me.tien.nftminer.world.VoidMine.PlayerMine;
+import me.tien.miner_simulator.world.VoidMine;
+import me.tien.miner_simulator.world.VoidMine.PlayerMine;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;

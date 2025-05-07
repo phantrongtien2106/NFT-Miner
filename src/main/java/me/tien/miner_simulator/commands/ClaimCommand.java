@@ -1,4 +1,4 @@
-package me.tien.nftminer.commands;
+package me.tien.miner_simulator.commands;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -13,17 +13,17 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
-import me.tien.nftminer.NFTMiner;
-import me.tien.nftminer.token.TokenManager;
-import me.tien.nftminer.token.TokenManager.ClaimResult;
-import me.tien.nftminer.upgrade.TokenValueUpgrade;
+import me.tien.miner_simulator.Miner_Simulator;
+import me.tien.miner_simulator.token.TokenManager;
+import me.tien.miner_simulator.token.TokenManager.ClaimResult;
+import me.tien.miner_simulator.upgrade.TokenValueUpgrade;
 
 public class ClaimCommand implements CommandExecutor, TabCompleter {
-    private final NFTMiner plugin;
+    private final Miner_Simulator plugin;
     private final TokenManager tokenManager;
     private final TokenValueUpgrade tokenValueUpgrade;
 
-    public ClaimCommand(NFTMiner plugin, TokenManager tokenManager, TokenValueUpgrade tokenValueUpgrade) {
+    public ClaimCommand(Miner_Simulator plugin, TokenManager tokenManager, TokenValueUpgrade tokenValueUpgrade) {
         this.plugin = plugin;
         this.tokenManager = tokenManager;
         this.tokenValueUpgrade = tokenValueUpgrade;

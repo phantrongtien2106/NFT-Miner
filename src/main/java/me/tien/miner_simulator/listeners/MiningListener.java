@@ -1,8 +1,8 @@
-package me.tien.nftminer.listeners;
+package me.tien.miner_simulator.listeners;
 
 import org.bukkit.metadata.MetadataValue;
-import me.tien.nftminer.NFTMiner;
-import me.tien.nftminer.integration.NFTPluginIntegration;
+import me.tien.miner_simulator.Miner_Simulator;
+import me.tien.miner_simulator.integration.NFTPluginIntegration;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -26,7 +26,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class MiningListener implements Listener {
 
-    private final NFTMiner plugin;
+    private final Miner_Simulator plugin;
     private final Random random = new Random();
     private final NFTPluginIntegration nftIntegration;
 
@@ -45,7 +45,7 @@ public class MiningListener implements Listener {
     private double maxLuckBuff = 0.20; // Tối đa 20% buff
 
 
-    public MiningListener(NFTMiner plugin) {
+    public MiningListener(Miner_Simulator plugin) {
         this.plugin = plugin;
         this.nftIntegration = plugin.getNFTIntegration();
 

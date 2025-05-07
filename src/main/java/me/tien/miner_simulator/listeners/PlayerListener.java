@@ -1,11 +1,11 @@
-package me.tien.nftminer.listeners;
+package me.tien.miner_simulator.listeners;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
-import me.tien.nftminer.upgrade.UpgradeManager;
+import me.tien.miner_simulator.upgrade.UpgradeManager;
 
 public class PlayerListener implements Listener {
     private final UpgradeManager upgradeManager;

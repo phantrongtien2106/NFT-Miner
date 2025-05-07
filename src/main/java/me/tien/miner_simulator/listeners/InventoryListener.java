@@ -1,4 +1,4 @@
-package me.tien.nftminer.listeners;
+package me.tien.miner_simulator.listeners;
 
 import java.util.List;
 
@@ -13,15 +13,15 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 
-import me.tien.nftminer.NFTMiner;
-import me.tien.nftminer.upgrade.InventoryUpgrade;
+import me.tien.miner_simulator.Miner_Simulator;
+import me.tien.miner_simulator.upgrade.InventoryUpgrade;
 
 public class InventoryListener implements Listener {
 
-    private final NFTMiner plugin;
+    private final Miner_Simulator plugin;
     private final InventoryUpgrade inventoryUpgrade;
 
-    public InventoryListener(NFTMiner plugin, InventoryUpgrade inventoryUpgrade) {
+    public InventoryListener(Miner_Simulator plugin, InventoryUpgrade inventoryUpgrade) {
         this.plugin = plugin;
         this.inventoryUpgrade = inventoryUpgrade;
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
@@ -53,6 +53,8 @@ public class InventoryListener implements Listener {
         }
 
         Player player = (Player) event.getWhoClicked();
+        
+        // Lấy danh sách các ô bị khóa hiện tại (cập nhật theo cấp độ)
         List<Integer> lockedSlots = inventoryUpgrade.getLockedSlots(player);
 
         // Nếu click vào inventory của người chơi
@@ -70,6 +72,7 @@ public class InventoryListener implements Listener {
                     // Có thể gọi lệnh mở shop ở đây
                     // player.performCommand("shop upgrade");
                 }
+                return;
             }
         }
 
@@ -102,6 +105,7 @@ public class InventoryListener implements Listener {
         }
 
         Player player = (Player) event.getWhoClicked();
+        // Lấy danh sách các ô bị khóa hiện tại (cập nhật theo cấp độ)
         List<Integer> lockedSlots = inventoryUpgrade.getLockedSlots(player);
 
         // Kiểm tra nếu bất kỳ slot nào bị ảnh hưởng là slot bị khóa

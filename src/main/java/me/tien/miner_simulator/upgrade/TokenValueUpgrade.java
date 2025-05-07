@@ -1,4 +1,4 @@
-package me.tien.nftminer.upgrade;
+package me.tien.miner_simulator.upgrade;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -8,20 +8,22 @@ import java.util.UUID;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
-import me.tien.nftminer.NFTMiner;
-import me.tien.nftminer.token.TokenManager;
+import me.tien.miner_simulator.Miner_Simulator;
+import me.tien.miner_simulator.token.TokenManager;
 
 public class TokenValueUpgrade implements Upgrade {
-    private final NFTMiner plugin;
+    private final Miner_Simulator plugin;
     private final TokenManager tokenManager;
     private final Map<UUID, Integer> playerLevels = new HashMap<>();
     private final Map<Integer, BigDecimal> upgradeCosts = new HashMap<>();
     private final Map<Integer, Double> multipliers = new HashMap<>();
     private final int maxLevel = 5;
+    private final UpgradeDataManager dataManager;
 
-    public TokenValueUpgrade(NFTMiner plugin, TokenManager tokenManager) {
+    public TokenValueUpgrade(Miner_Simulator plugin, TokenManager tokenManager) {
         this.plugin = plugin;
         this.tokenManager = tokenManager;
+        this.dataManager = new UpgradeDataManager(plugin, "token-value");
         loadConfig();
     }
 
@@ -61,16 +63,15 @@ public class TokenValueUpgrade implements Upgrade {
     @Override
     public void loadPlayerData(Player player) {
         UUID id = player.getUniqueId();
-        int level = plugin.getConfig().getInt("player-data." + id + ".token-value-level", 0);
+        int level = dataManager.getPlayerLevel(id);
         playerLevels.put(id, level);
     }
 
     @Override
     public void saveData() {
         for (Map.Entry<UUID, Integer> entry : playerLevels.entrySet()) {
-            plugin.getConfig().set("player-data." + entry.getKey() + ".token-value-level", entry.getValue());
+            dataManager.setPlayerLevel(entry.getKey(), entry.getValue());
         }
-        plugin.saveConfig();
     }
 
     @Override
@@ -87,13 +88,13 @@ public class TokenValueUpgrade implements Upgrade {
     public void setLevel(Player player, int level) {
         UUID id = player.getUniqueId();
         playerLevels.put(id, level);
-        saveData();
+        dataManager.setPlayerLevel(id, level);
     }
 
     @Override
     public void setLevel(UUID uuid, int level) {
         playerLevels.put(uuid, level);
-        saveData();
+        dataManager.setPlayerLevel(uuid, level);
     }
 
     @Override

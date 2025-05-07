@@ -1,11 +1,10 @@
-package me.tien.nftminer.listeners;
+package me.tien.miner_simulator.listeners;
 
-import me.tien.nftminer.gui.ShopGUI;
+import me.tien.miner_simulator.gui.ShopGUI;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 
 public class ShopListener implements Listener {

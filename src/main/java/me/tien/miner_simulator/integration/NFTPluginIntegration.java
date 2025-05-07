@@ -1,8 +1,8 @@
-package me.tien.nftminer.integration;
+package me.tien.miner_simulator.integration;
 
 import com.google.gson.JsonObject;
-import me.tien.nftminer.NFTMiner;
-import me.tien.nftminer.service.NFTMetadataService;
+import me.tien.miner_simulator.Miner_Simulator;
+import me.tien.miner_simulator.service.NFTMetadataService;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 
@@ -11,12 +11,12 @@ import java.util.logging.Level;
 
 public class NFTPluginIntegration {
 
-    private final NFTMiner plugin;
+    private final Miner_Simulator plugin;
     private Plugin nftPluginInstance;
     private NFTMetadataService metadataService;
     private boolean nftPluginAvailable = false;
 
-    public NFTPluginIntegration(NFTMiner plugin) {
+    public NFTPluginIntegration(Miner_Simulator plugin) {
         this.plugin = plugin;
         this.metadataService = new NFTMetadataService(plugin);
         initialize();

@@ -1,4 +1,4 @@
-package me.tien.nftminer.token;
+package me.tien.miner_simulator.token;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -14,12 +14,12 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import me.tien.nftminer.NFTMiner;
-import me.tien.nftminer.integration.MinePathIntegration;
-import me.tien.nftminer.upgrade.TokenValueUpgrade;
+import me.tien.miner_simulator.Miner_Simulator;
+import me.tien.miner_simulator.integration.MinePathIntegration;
+import me.tien.miner_simulator.upgrade.TokenValueUpgrade;
 
 public class TokenManager {
-    private final NFTMiner plugin;
+    private final Miner_Simulator plugin;
     private final MinePathIntegration minePathIntegration;
     private TokenValueUpgrade tokenValueUpgrade;
     private final Map<Material, BigDecimal> blockValues = new HashMap<>();
@@ -34,7 +34,7 @@ public class TokenManager {
             Material.DIAMOND_ORE);
     private final Map<UUID, BigDecimal> fallbackTokens = new HashMap<>();
 
-    public TokenManager(NFTMiner plugin) {
+    public TokenManager(Miner_Simulator plugin) {
         this.plugin = plugin;
         this.minePathIntegration = new MinePathIntegration(plugin);
 

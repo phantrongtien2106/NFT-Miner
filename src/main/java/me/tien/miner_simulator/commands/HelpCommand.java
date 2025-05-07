@@ -1,16 +1,15 @@
-package me.tien.nftminer.commands;
+package me.tien.miner_simulator.commands;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
-import me.tien.nftminer.NFTMiner;
+import me.tien.miner_simulator.Miner_Simulator;
 
 public class HelpCommand implements CommandExecutor {
-    private final NFTMiner plugin;
+    private final Miner_Simulator plugin;
 
-    public HelpCommand(NFTMiner plugin) {
+    public HelpCommand(Miner_Simulator plugin) {
         this.plugin = plugin;
     }
 

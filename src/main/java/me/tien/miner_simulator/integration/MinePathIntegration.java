@@ -1,6 +1,6 @@
-package me.tien.nftminer.integration;
+package me.tien.miner_simulator.integration;
 
-import me.tien.nftminer.NFTMiner;
+import me.tien.miner_simulator.Miner_Simulator;
 import org.bukkit.Bukkit;
 
 import java.math.BigDecimal;
@@ -9,10 +9,10 @@ import java.util.UUID;
 import java.util.logging.Level;
 
 public class MinePathIntegration {
-    private final NFTMiner plugin;
+    private final Miner_Simulator plugin;
     private Connection connection;
 
-    public MinePathIntegration(NFTMiner plugin) {
+    public MinePathIntegration(Miner_Simulator plugin) {
         this.plugin = plugin;
         initConnection();
     }

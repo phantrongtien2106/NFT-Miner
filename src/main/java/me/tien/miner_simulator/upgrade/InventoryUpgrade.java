@@ -1,4 +1,4 @@
-package me.tien.nftminer.upgrade;
+package me.tien.miner_simulator.upgrade;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -12,18 +12,20 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import me.tien.nftminer.NFTMiner;
-import me.tien.nftminer.token.TokenManager;
+import me.tien.miner_simulator.Miner_Simulator;
+import me.tien.miner_simulator.token.TokenManager;
 
 public class InventoryUpgrade implements Upgrade {
     private final Map<UUID, Integer> playerLevels = new HashMap<>();
     private final Map<Integer, Integer> levelCosts = new HashMap<>();
-    private final NFTMiner plugin;
+    private final Miner_Simulator plugin;
     private final TokenManager tokenManager;
+    private final UpgradeDataManager dataManager;
 
-    public InventoryUpgrade(NFTMiner plugin, TokenManager tokenManager) {
+    public InventoryUpgrade(Miner_Simulator plugin, TokenManager tokenManager) {
         this.plugin = plugin;
         this.tokenManager = tokenManager;
+        this.dataManager = new UpgradeDataManager(plugin, "inventory");
         loadConfig();
     }
 
@@ -47,7 +49,9 @@ public class InventoryUpgrade implements Upgrade {
 
     @Override
     public void setLevel(UUID uuid, int level) {
-        playerLevels.put(uuid, Math.min(level, getMaxLevel()));
+        int finalLevel = Math.min(level, getMaxLevel());
+        playerLevels.put(uuid, finalLevel);
+        dataManager.setPlayerLevel(uuid, finalLevel); // Lưu vào file người chơi
     }
 
     @Override
@@ -73,12 +77,10 @@ public class InventoryUpgrade implements Upgrade {
 
     @Override
     public void saveData() {
-        // Lưu dữ liệu người chơi vào file
+        // Lưu tất cả dữ liệu người chơi từ bộ nhớ vào file
         for (Map.Entry<UUID, Integer> entry : playerLevels.entrySet()) {
-            String path = "players." + entry.getKey() + ".inventory-level";
-            plugin.getConfig().set(path, entry.getValue());
+            dataManager.setPlayerLevel(entry.getKey(), entry.getValue());
         }
-        plugin.saveConfig();
     }
 
     @Override
@@ -99,18 +101,16 @@ public class InventoryUpgrade implements Upgrade {
         for (int slot : lockedSlots) {
             player.getInventory().setItem(slot, createLockBarrier());
         }
+        
+        // Cập nhật inventory cho người chơi
+        player.updateInventory();
     }
 
     @Override
     public void loadPlayerData(Player player) {
         UUID uuid = player.getUniqueId();
-        String path = "players." + uuid + ".inventory-level";
-        if (plugin.getConfig().contains(path)) {
-            int level = plugin.getConfig().getInt(path);
-            playerLevels.put(uuid, level);
-        } else {
-            playerLevels.put(uuid, 0);
-        }
+        int level = dataManager.getPlayerLevel(uuid);
+        playerLevels.put(uuid, level);
     }
 
     @Override
@@ -160,10 +160,15 @@ public class InventoryUpgrade implements Upgrade {
         if (tokenManager.hasTokens(player, cost)) {
             tokenManager.removeTokens(player, BigDecimal.valueOf(cost));
             setLevel(player, currentLevel + 1);
-            player.sendMessage("§a§lThành công: §r§aĐã mở khóa thêm một hàng inventory!");
-
+            
             // Cập nhật inventory để loại bỏ các ô đã mở khóa
             applyEffect(player);
+            
+            // Thông báo cho người chơi
+            int newLevel = currentLevel + 1;
+            String rowMessage = newLevel == 1 ? "hàng đầu tiên" : (newLevel == 2 ? "hàng thứ hai" : "hàng cuối cùng");
+            player.sendMessage("§a§lThành công: §r§aĐã mở khóa " + rowMessage + " của inventory!");
+            player.sendMessage("§e§lChú ý: §r§eBạn đã có thể đặt đồ vào hàng vừa mở khóa.");
 
             return true;
         } else {

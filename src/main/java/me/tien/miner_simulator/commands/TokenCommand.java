@@ -1,7 +1,7 @@
-package me.tien.nftminer.commands;
+package me.tien.miner_simulator.commands;
 
-import me.tien.nftminer.NFTMiner;
-import me.tien.nftminer.token.TokenManager;
+import me.tien.miner_simulator.Miner_Simulator;
+import me.tien.miner_simulator.token.TokenManager;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -11,10 +11,10 @@ import org.bukkit.entity.Player;
 import java.math.BigDecimal;
 
 public class TokenCommand implements CommandExecutor {
-    private final NFTMiner plugin;
+    private final Miner_Simulator plugin;
     private final TokenManager tokenManager;
 
-    public TokenCommand(NFTMiner plugin, TokenManager tokenManager) {
+    public TokenCommand(Miner_Simulator plugin, TokenManager tokenManager) {
         this.plugin = plugin;
         this.tokenManager = tokenManager;
     }

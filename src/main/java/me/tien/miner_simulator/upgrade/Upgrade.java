@@ -1,4 +1,4 @@
-package me.tien.nftminer.upgrade;
+package me.tien.miner_simulator.upgrade;
 
 import java.util.UUID;
 import org.bukkit.entity.Player;

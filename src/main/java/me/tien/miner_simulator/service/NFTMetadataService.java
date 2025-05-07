@@ -1,10 +1,10 @@
-package me.tien.nftminer.service;
+package me.tien.miner_simulator.service;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import me.tien.nftminer.NFTMiner;
+import me.tien.miner_simulator.Miner_Simulator;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 
@@ -20,13 +20,13 @@ import java.util.logging.Level;
  */
 public class NFTMetadataService {
 
-    private final NFTMiner plugin;
+    private final Miner_Simulator plugin;
     private final Map<String, Map<String, List<String>>> nftsByRarityCache = new ConcurrentHashMap<>();
     private final Map<String, JsonObject> metadataCache = new ConcurrentHashMap<>();
     private long lastCacheUpdate = 0;
     private static final long CACHE_TTL = 60000; // 1 minute cache TTL
 
-    public NFTMetadataService(NFTMiner plugin) {
+    public NFTMetadataService(Miner_Simulator plugin) {
         this.plugin = plugin;
     }
 

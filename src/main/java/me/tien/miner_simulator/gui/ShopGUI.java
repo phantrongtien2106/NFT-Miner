@@ -1,11 +1,11 @@
-package me.tien.nftminer.gui;
+package me.tien.miner_simulator.gui;
 
-import me.tien.nftminer.NFTMiner;
-import me.tien.nftminer.token.TokenManager;
-import me.tien.nftminer.upgrade.SpeedUpgrade;
-import me.tien.nftminer.upgrade.TokenValueUpgrade;
-import me.tien.nftminer.upgrade.InventoryUpgrade;
-import me.tien.nftminer.upgrade.UpgradeManager;
+import me.tien.miner_simulator.Miner_Simulator;
+import me.tien.miner_simulator.token.TokenManager;
+import me.tien.miner_simulator.upgrade.SpeedUpgrade;
+import me.tien.miner_simulator.upgrade.TokenValueUpgrade;
+import me.tien.miner_simulator.upgrade.InventoryUpgrade;
+import me.tien.miner_simulator.upgrade.UpgradeManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -14,12 +14,11 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ShopGUI {
-    private final NFTMiner plugin;
+    private final Miner_Simulator plugin;
     private final TokenManager tokenManager;
     private final SpeedUpgrade speedUpgrade;
     private final TokenValueUpgrade tokenValueUpgrade;
@@ -30,7 +29,7 @@ public class ShopGUI {
     private static final int INVENTORY_UPGRADE_SLOT = 15;
     private static final int TOKEN_INFO_SLOT = 22;
 
-    public ShopGUI(NFTMiner plugin, TokenManager tokenManager, UpgradeManager upgradeManager) {
+    public ShopGUI(Miner_Simulator plugin, TokenManager tokenManager, UpgradeManager upgradeManager) {
         this.plugin = plugin;
         this.tokenManager = tokenManager;
         this.speedUpgrade = upgradeManager.getSpeedUpgrade();

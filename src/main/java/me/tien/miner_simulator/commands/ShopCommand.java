@@ -1,17 +1,17 @@
-package me.tien.nftminer.commands;
+package me.tien.miner_simulator.commands;
 
-import me.tien.nftminer.NFTMiner;
-import me.tien.nftminer.gui.ShopGUI;
+import me.tien.miner_simulator.Miner_Simulator;
+import me.tien.miner_simulator.gui.ShopGUI;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class ShopCommand implements CommandExecutor {
-    private final NFTMiner plugin;
+    private final Miner_Simulator plugin;
     private final ShopGUI shopGUI;
 
-    public ShopCommand(NFTMiner plugin, ShopGUI shopGUI) {
+    public ShopCommand(Miner_Simulator plugin, ShopGUI shopGUI) {
         this.plugin = plugin;
         this.shopGUI = shopGUI;
     }

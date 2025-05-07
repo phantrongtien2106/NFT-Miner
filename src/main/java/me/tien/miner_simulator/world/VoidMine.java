@@ -1,4 +1,4 @@
-package me.tien.nftminer.world;
+package me.tien.miner_simulator.world;
 
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.WorldEdit;
@@ -19,6 +19,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import java.io.*;
 import java.util.*;
@@ -64,7 +66,9 @@ public class VoidMine implements Listener {
         private final UUID playerUUID;
         private final String playerName;
         private final String worldName;
-
+        private static final int PASTE_X = 0;
+        private static final int PASTE_Y = 10;
+        private static final int PASTE_Z = 0;
         private World mineWorld;
         private Location spawnLocation;
 
@@ -81,7 +85,7 @@ public class VoidMine implements Listener {
         public void createMineWorld() {
             mineWorld = Bukkit.getWorld(worldName);
             if (mineWorld == null) {
-                WorldCreator worldCreator = new WorldCreator(worldName);
+                WorldCreator worldCreator = new WorldCreator("mines/" + worldName);
                 worldCreator.generator(new VoidGenerator());
                 worldCreator.generateStructures(false);
                 mineWorld = worldCreator.createWorld();
@@ -91,27 +95,18 @@ public class VoidMine implements Listener {
                     mineWorld.setTime(6000);
                     mineWorld.setDifficulty(Difficulty.PEACEFUL);
                     mineWorld.setGameRule(GameRule.DO_MOB_SPAWNING, false);
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
-                            String.format("rg flag __global__ block-place deny %s", worldName));
                 }
             }
             if (mineWorld != null) {
-                FileConfiguration config = plugin.getConfig();
-                ConfigurationSection locationSection = config.getConfigurationSection("location-settings");
                 File schematicFile = new File(plugin.getDataFolder(), "schematics/mine_template.schem");
-                ConfigurationSection paste = locationSection.getConfigurationSection("paste");
-                int pasteX = paste.getInt("x", 0);
-                int pasteY = paste.getInt("y", 10);
-                int pasteZ = paste.getInt("z", 0);
-                Location pasteLocation = new Location(mineWorld, pasteX, pasteY, pasteZ);
+                Location pasteLocation = new Location(mineWorld, PASTE_X, PASTE_Y, PASTE_Z);
                 pasteSchematic(schematicFile, pasteLocation);
-                int spawnX = pasteX - 30;
-                int spawnY = pasteY - 9;
-                int spawnZ = pasteZ - 19;
+                int spawnX = PASTE_X - 30;
+                int spawnY = PASTE_Y - 9;
+                int spawnZ = PASTE_Z - 19;
                 spawnLocation = new Location(mineWorld, spawnX, spawnY, spawnZ);
                 mineWorld.setSpawnLocation(spawnLocation);
                 fillMiningBox();
-
             } else {
                 getLogger().severe("Không thể tạo hoặc tải thế giới: " + worldName + " cho người chơi " + playerName);
             }
@@ -171,7 +166,6 @@ public class VoidMine implements Listener {
             FileConfiguration config = plugin.getConfig();
             ConfigurationSection box = config.getConfigurationSection("mine-box");
             if (box == null) return;
-
             minX = box.getInt("min-x");
             minY = box.getInt("min-y");
             minZ = box.getInt("min-z");
@@ -182,7 +176,8 @@ public class VoidMine implements Listener {
             maxX = minX + width;
             maxY = minY + height;
             maxZ = minZ + length;
-            //Thiết lập region
+            
+            //Thiết lập region cho mining box
             String regionName = "box_" + playerUUID.toString().replace("-", "");
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
                     String.format("rg define %s %d %d %d %d %d %d %s",
@@ -190,7 +185,10 @@ public class VoidMine implements Listener {
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
                     String.format("rg flag %s block-break allow %s", regionName, worldName));
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
+                    String.format("rg flag %s block-place deny %s", regionName, worldName));
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
                     String.format("rg setpriority %s 10 %s", regionName, worldName));
+
             Random random = new Random();
             for (int x = minX; x < maxX; x++) {
                 for (int y = minY; y < maxY; y++) {
@@ -226,6 +224,7 @@ public class VoidMine implements Listener {
         public void teleportPlayer(Player player) {
             if (spawnLocation != null) {
                 player.teleport(spawnLocation);
+                player.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, Integer.MAX_VALUE, 0, false, false));
                 player.sendMessage(ChatColor.GREEN + "Bạn đã được teleport đến khu đào của mình!");
             } else {
                 player.sendMessage(ChatColor.RED + "Không thể xác định vị trí spawn trong khu đào của bạn!");
@@ -237,7 +236,13 @@ public class VoidMine implements Listener {
     public static class VoidGenerator extends ChunkGenerator {
         @Override
         public ChunkData generateChunkData(World world, Random random, int x, int z, BiomeGrid biome) {
-            return createChunkData(world);
+            ChunkData chunkData = createChunkData(world);
+            for (int i = 0; i < 16; i++) {
+                for (int j = 0; j < 16; j++) {
+                    biome.setBiome(i, 0, j, org.bukkit.block.Biome.PLAINS);
+                }
+            }
+            return chunkData;
         }
     }
 

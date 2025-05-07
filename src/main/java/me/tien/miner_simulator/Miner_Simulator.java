@@ -1,26 +1,26 @@
 package me.tien.miner_simulator;
 
-import me.tien.nftminer.commands.*;
-import me.tien.nftminer.listeners.MiningListener;
+import me.tien.miner_simulator.commands.*;
+import me.tien.miner_simulator.listeners.MiningListener;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import me.tien.nftminer.gui.ShopGUI;
-import me.tien.nftminer.integration.MinePathIntegration;
-import me.tien.nftminer.integration.NFTPluginIntegration;
-import me.tien.nftminer.listeners.InventoryListener;
-import me.tien.nftminer.listeners.PlayerListener;
-import me.tien.nftminer.listeners.ShopListener;
-import me.tien.nftminer.scoreboard.CustomScoreboardManager;
-import me.tien.nftminer.token.TokenManager;
-import me.tien.nftminer.upgrade.InventoryUpgrade;
-import me.tien.nftminer.upgrade.SpeedUpgrade;
-import me.tien.nftminer.upgrade.TokenValueUpgrade;
-import me.tien.nftminer.upgrade.UpgradeManager;
-import me.tien.nftminer.world.VoidMine;
+import me.tien.miner_simulator.gui.ShopGUI;
+import me.tien.miner_simulator.integration.MinePathIntegration;
+import me.tien.miner_simulator.integration.NFTPluginIntegration;
+import me.tien.miner_simulator.listeners.InventoryListener;
+import me.tien.miner_simulator.listeners.PlayerListener;
+import me.tien.miner_simulator.listeners.ShopListener;
+import me.tien.miner_simulator.scoreboard.CustomScoreboardManager;
+import me.tien.miner_simulator.token.TokenManager;
+import me.tien.miner_simulator.upgrade.InventoryUpgrade;
+import me.tien.miner_simulator.upgrade.SpeedUpgrade;
+import me.tien.miner_simulator.upgrade.TokenValueUpgrade;
+import me.tien.miner_simulator.upgrade.UpgradeManager;
+import me.tien.miner_simulator.world.VoidMine;
 
-public class NFTMiner extends JavaPlugin {
+public class Miner_Simulator extends JavaPlugin {
     private VoidMine voidMine;
     private NFTPluginIntegration nftIntegration;
     private MinePathIntegration minePathIntegration;

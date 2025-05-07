@@ -1,13 +1,13 @@
-package me.tien.nftminer.upgrade;
+package me.tien.miner_simulator.upgrade;
 
-import me.tien.nftminer.NFTMiner;
-import me.tien.nftminer.token.TokenManager;
+import me.tien.miner_simulator.Miner_Simulator;
+import me.tien.miner_simulator.token.TokenManager;
 import org.bukkit.entity.Player;
 import java.util.HashMap;
 import java.util.Map;
 
 public class UpgradeManager {
-    private final NFTMiner plugin;
+    private final Miner_Simulator plugin;
     private final TokenManager tokenManager;
     private final Map<String, Upgrade> upgrades = new HashMap<>();
 
@@ -16,16 +16,14 @@ public class UpgradeManager {
     private SpeedUpgrade speedUpgrade;
     private InventoryUpgrade inventoryUpgrade;
 
-    public UpgradeManager(NFTMiner plugin, TokenManager tokenManager) {
+    public UpgradeManager(Miner_Simulator plugin, TokenManager tokenManager) {
         this.plugin = plugin;
         this.tokenManager = tokenManager;
-        this.tokenValueUpgrade = new TokenValueUpgrade(plugin, tokenManager);
         // Initialize upgrades
-        this.inventoryUpgrade = new InventoryUpgrade(plugin, tokenManager);
-        plugin.getLogger().info("[UpgradeManager] All upgrades loaded successfully");
-        // Initialize other upgrades...
+        plugin.getLogger().info("[UpgradeManager] Đang tải các loại nâng cấp...");
         // Register all upgrades
         registerUpgrades();
+        plugin.getLogger().info("[UpgradeManager] Đã tải " + upgrades.size() + " loại nâng cấp thành công.");
     }
 
     /**
@@ -70,11 +68,7 @@ public class UpgradeManager {
      * @return The inventory upgrade instance
      */
     public InventoryUpgrade getInventoryUpgrade() {
-        return upgrades.values().stream()
-                .filter(upgrade -> upgrade instanceof InventoryUpgrade)
-                .map(upgrade -> (InventoryUpgrade) upgrade)
-                .findFirst()
-                .orElse(null);
+        return inventoryUpgrade;
     }
 
     /**
@@ -104,11 +98,18 @@ public class UpgradeManager {
         for (Upgrade upgrade : upgrades.values()) {
             upgrade.saveData();
         }
+        plugin.getLogger().info("[UpgradeManager] Đã lưu dữ liệu nâng cấp cho tất cả người chơi.");
     }
 
+    /**
+     * Load data for a player for all upgrades
+     * 
+     * @param player Player to load data for
+     */
     public void loadPlayerData(Player player) {
-        inventoryUpgrade.loadPlayerData(player);
-        // Load data for other upgrades...
+        for (Upgrade upgrade : upgrades.values()) {
+            upgrade.loadPlayerData(player);
+        }
+        plugin.getLogger().info("[UpgradeManager] Đã tải dữ liệu nâng cấp cho người chơi: " + player.getName());
     }
-    
 }

@@ -1,8 +1,8 @@
-package me.tien.nftminer.commands;
+package me.tien.miner_simulator.commands;
 
-import me.tien.nftminer.NFTMiner;
-import me.tien.nftminer.world.VoidMine;
-import me.tien.nftminer.world.VoidMine.PlayerMine;
+import me.tien.miner_simulator.Miner_Simulator;
+import me.tien.miner_simulator.world.VoidMine;
+import me.tien.miner_simulator.world.VoidMine.PlayerMine;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -11,10 +11,10 @@ import org.bukkit.entity.Player;
 
 public class MiningBoxCommand implements CommandExecutor {
 
-    private final NFTMiner plugin;
+    private final Miner_Simulator plugin;
     private final VoidMine voidMine;
 
-    public MiningBoxCommand(NFTMiner plugin, VoidMine voidMine) {
+    public MiningBoxCommand(Miner_Simulator plugin, VoidMine voidMine) {
         this.plugin = plugin;
         this.voidMine = voidMine;
     }

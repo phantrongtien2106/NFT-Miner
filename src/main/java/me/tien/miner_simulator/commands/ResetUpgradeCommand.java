@@ -1,19 +1,19 @@
 
-package me.tien.nftminer.commands;
+package me.tien.miner_simulator.commands;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import me.tien.nftminer.NFTMiner;
-import me.tien.nftminer.upgrade.UpgradeManager;
+import me.tien.miner_simulator.Miner_Simulator;
+import me.tien.miner_simulator.upgrade.UpgradeManager;
 
 public class ResetUpgradeCommand implements CommandExecutor {
-    private final NFTMiner plugin;
+    private final Miner_Simulator plugin;
     private final UpgradeManager upgradeManager;
 
-    public ResetUpgradeCommand(NFTMiner plugin, UpgradeManager upgradeManager) {
+    public ResetUpgradeCommand(Miner_Simulator plugin, UpgradeManager upgradeManager) {
         this.plugin = plugin;
         this.upgradeManager = upgradeManager;
     }

@@ -1,9 +1,7 @@
-package me.tien.nftminer.scoreboard;
+package me.tien.miner_simulator.scoreboard;
 
-import me.tien.nftminer.NFTMiner;
-import me.tien.nftminer.integration.MinePathIntegration;
-import me.tien.nftminer.upgrade.InventoryUpgrade;
-import me.tien.nftminer.upgrade.SpeedUpgrade;
+import me.tien.miner_simulator.Miner_Simulator;
+import me.tien.miner_simulator.integration.MinePathIntegration;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -12,10 +10,10 @@ import org.bukkit.scoreboard.*;
 import java.math.BigDecimal;
 
 public class CustomScoreboardManager {
-    private final NFTMiner plugin;
+    private final Miner_Simulator plugin;
     private final MinePathIntegration minePathIntegration;
 
-    public CustomScoreboardManager(NFTMiner plugin, MinePathIntegration minePathIntegration) {
+    public CustomScoreboardManager(Miner_Simulator plugin, MinePathIntegration minePathIntegration) {
         this.plugin = plugin;
         this.minePathIntegration = minePathIntegration;
     }
