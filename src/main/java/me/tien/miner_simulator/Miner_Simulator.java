@@ -1,4 +1,4 @@
-package me.tien.nftminer;
+package me.tien.miner_simulator;
 
 import me.tien.nftminer.commands.*;
 import me.tien.nftminer.listeners.MiningListener;
@@ -34,30 +34,17 @@ public class NFTMiner extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        Bukkit.getScheduler().runTaskLater(this, () -> {
         // Khởi tạo tích hợp NFTPlugin
         nftIntegration = new NFTPluginIntegration(this);
-
+        // Khởi tạo VoidMine
+        voidMine = new VoidMine(this);
         // 1) Tạo trước TokenManager tạm (không dùng upgradeManager)
         tokenManager = new TokenManager(this);
         getLogger().info("TokenManager initialized successfully");
-
         // 2) Tạo UpgradeManager, truyền vào TokenManager
         upgradeManager = new UpgradeManager(this, tokenManager);
         getLogger().info("UpgradeManager initialized successfully");
-
-        // Registering InventoryListener
-        try {
-            InventoryListener inventoryListener = new InventoryListener(this, upgradeManager);
-            getServer().getPluginManager().registerEvents(inventoryListener, this);
-            getLogger().info("InventoryListener registered successfully!");
-
-            // Log number of locked slots for verification
-            getLogger().info("InventoryListener is ready to handle inventory locks");
-        } catch (Exception e) {
-            getLogger().severe("Failed to register InventoryListener: " + e.getMessage());
-            e.printStackTrace();
-        }
-
         // 3) Giờ TokenManager có thể lấy được tokenValueUpgrade
         tokenManager.setTokenValueUpgrade(upgradeManager.getTokenValueUpgrade());
         tokenValueUpgrade = upgradeManager.getTokenValueUpgrade();
@@ -67,28 +54,25 @@ public class NFTMiner extends JavaPlugin {
         speedUpgrade = upgradeManager.getSpeedUpgrade();
         // Lưu config mặc định
         saveDefaultConfig();
-
         // Đăng ký lệnh
         getCommand("claim").setExecutor(new ClaimCommand(this, tokenManager,tokenValueUpgrade));
         getCommand("token").setExecutor(new TokenCommand(this, tokenManager));
         getCommand("shop").setExecutor(new ShopCommand(this, shopGUI));
-        getCommand("miningbox").setExecutor(new MiningBoxCommand(this));
-        getCommand("resetmine").setExecutor(new ResetMineCommand(this));
+        getCommand("miningbox").setExecutor(new MiningBoxCommand(this, voidMine));
+        getCommand("resetmine").setExecutor(new ResetMineCommand(voidMine));
         getCommand("resetupgrades").setExecutor(new ResetUpgradeCommand(this, upgradeManager));
         getCommand("help").setExecutor(new HelpCommand(this));
         // Đăng ký listener
         getServer().getPluginManager().registerEvents(new ShopListener(shopGUI), this);
         getServer().getPluginManager().registerEvents(new PlayerListener(upgradeManager), this);
         getServer().getPluginManager().registerEvents(new MiningListener(this), this);
-
+        getServer().getPluginManager().registerEvents(new InventoryListener(this, inventoryUpgrade), this);
         if (nftIntegration.isNFTPluginAvailable()) {
             getLogger().info("Tìm thấy NFTPlugin - Chức năng NFT đã được kích hoạt!");
         } else {
             getLogger().warning("Không tìm thấy NFTPlugin - Chức năng NFT bị vô hiệu hóa!");
         }
         // Khởi tạo tích hợp SolanaCoin
-
-        Bukkit.getScheduler().runTaskLater(this, () -> {
             Plugin minePath = getServer().getPluginManager().getPlugin("MinePath");
             if (minePath != null && minePath.isEnabled()) {
                 getLogger().info("MinePath đã sẵn sàng!");
@@ -103,9 +87,7 @@ public class NFTMiner extends JavaPlugin {
             } else {
                 getLogger().warning("MinePath chưa sẵn sàng!");
             }
-        }, 140L); // chờ 1 giây (20 ticks) sau khi server load
-        // Khởi tạo VoidMine
-        voidMine = new VoidMine(this);
+        }, 40L); // chờ 1 giây (20 ticks) sau khi server load
     }
 
     /**

@@ -204,4 +204,17 @@ public class TokenManager {
     public void setTokenValueUpgrade(TokenValueUpgrade tvu) {
         this.tokenValueUpgrade = tvu;
     }
+    /**
+     * Kiểm tra xem người chơi có đủ lượng token cho một giao dịch hay không
+     *
+     * @param player Người chơi cần kiểm tra
+     * @param amount Số lượng token cần kiểm tra
+     * @return true nếu người chơi có đủ token, false nếu không đủ
+     */
+    public boolean hasTokens(Player player, int amount) {
+        if (player == null) return false;
+
+        BigDecimal tokenAmount = BigDecimal.valueOf(amount);
+        return hasEnoughTokens(player, tokenAmount);
+    }
 }
