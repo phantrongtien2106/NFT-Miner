@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -19,7 +20,6 @@
   </properties>
 
   <repositories>
-
     <repository>
       <id>papermc</id>
       <url>https://repo.papermc.io/repository/maven-public/</url>
@@ -39,8 +39,6 @@
   </repositories>
 
   <dependencies>
-    <!-- NFTPlugin dependency removed to avoid conflicts -->
-    <!-- We now use our own proxy classes instead -->
     <!-- Paper API -->
     <dependency>
       <groupId>io.papermc.paper</groupId>
@@ -66,22 +64,34 @@
     <dependency>
       <groupId>com.sk89q.worldedit</groupId>
       <artifactId>worldedit-bukkit</artifactId>
-      <version>7.2.15</version> <!-- hoặc phiên bản mới nhất -->
+      <version>7.2.15</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.spigotmc</groupId>
       <artifactId>spigot-api</artifactId>
-      <version>1.18.2-R0.1-SNAPSHOT</version> <!-- hoặc phiên bản phù hợp -->
+      <version>1.18.2-R0.1-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>
 
   <build>
     <resources>
+      <!-- Các tài nguyên thông thường với filtering -->
       <resource>
         <directory>src/main/resources</directory>
         <filtering>true</filtering>
+        <excludes>
+          <exclude>**/*.schem</exclude>
+        </excludes>
+      </resource>
+      <!-- File schematic không filtering -->
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>false</filtering>
+        <includes>
+          <include>**/*.schem</include>
+        </includes>
       </resource>
     </resources>
 
@@ -113,6 +123,11 @@
               <filters>
                 <filter>
                   <artifact>io.papermc.paper:paper-api</artifact>
+                  <excludes>
+                    <exclude>*</exclude>
+                  </excludes>
+                </filter>
+                <filter>
                   <artifact>com.github.MilkBowl:VaultAPI</artifact>
                   <excludes>
                     <exclude>*</exclude>

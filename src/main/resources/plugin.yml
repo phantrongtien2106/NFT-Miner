@@ -32,6 +32,7 @@ commands:
   help:
     description: Xem thông tin về plugin
     usage: /help
+    permission: miner_simulator.help
 
 permissions:
   miner_simulator.miningbox:
@@ -40,3 +41,6 @@ permissions:
   miner_simulator.resetupgrades:
     description: Cho phép đặt lại tất cả nâng cấp
     default: op
+  miner_simulator.help:
+    description: Cho phép xem thông tin trợ giúp về plugin
+    default: true

@@ -1,4 +1,5 @@
 me\tien\miner_simulator\listeners\PlayerJoinListener.class
+me\tien\miner_simulator\world\VoidMine$PlayerMine$1.class
 me\tien\miner_simulator\service\NFTMetadataService.class
 me\tien\miner_simulator\commands\MiningBoxCommand.class
 me\tien\miner_simulator\upgrade\InventoryUpgrade.class

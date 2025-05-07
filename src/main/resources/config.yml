@@ -13,9 +13,9 @@ minepath:
   host: localhost
   port: 3306
   database: minepath
-  username: root
+  username: solana
   password: solana
-
+  
 # Tỷ lệ sinh ra các loại quặng trong khu đào (tổng nên bằng 1.0)
 ore-rates:
   stone: 0.7
@@ -25,12 +25,12 @@ ore-rates:
 
 # Khu vực MiningBox (tọa độ tính trong thế giới mỏ riêng)
 mine-box:
-  min-x: -5
-  min-y: 5
-  min-z: -5
-  width: 10
-  height: 6
-  length: 10
+  min-x: 10
+  min-y: 10
+  min-z: 10
+  width: 15  # Kích thước theo trục X: 15 blocks
+  height: 8  # Kích thước theo trục Y: 8 blocks
+  length: 15 # Kích thước theo trục Z: 15 blocks
 
 # Cấu hình nâng cấp tốc độ
 speed-upgrade:

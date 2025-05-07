@@ -67,6 +67,5 @@ public class UpgradeDataManager {
     }
 
     public void reloadData(UUID playerUuid) {
-        // Không cần lưu trữ nội dung file trong bộ nhớ nữa vì mỗi lần truy cập đều đọc từ file
     }
 } 

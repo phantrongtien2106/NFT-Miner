@@ -31,7 +31,7 @@ public class HelpCommand implements CommandExecutor {
         sender.sendMessage("§a§l║ §f- Upgrade inventory space at §e/shop §fto reduce costs");
 
         // Only show admin commands to players with appropriate permissions
-        if (sender.hasPermission("nftminer.admin")) {
+        if (sender.hasPermission("miner_simulator.resetupgrades")) {
             sender.sendMessage("§a§l╠═══════ §c§lAdmin Commands §a§l═══════╣");
             sender.sendMessage("§a§l║ §c/resetupgrade §f- Reset all upgrades");
             sender.sendMessage("§a§l║ §c/nftminer reload §f- Reload configuration");

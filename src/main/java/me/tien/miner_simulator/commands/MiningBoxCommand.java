@@ -28,11 +28,6 @@ public class MiningBoxCommand implements CommandExecutor {
 
         Player player = (Player) sender;
 
-        if (!player.hasPermission("nftminer.miningbox")) {
-            player.sendMessage(ChatColor.RED + "Bạn không có quyền sử dụng lệnh này.");
-            return true;
-        }
-
         player.sendMessage(ChatColor.YELLOW + "Đang kiểm tra khu đào của bạn...");
 
         plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
